@@ -1,39 +1,56 @@
 import { z } from "zod";
 
-class DoItPlzClient {
-  events: any;
-  /**
-   * {
-   *   "eventName": {
-   *     handler: () => {},
-   *     onSuccess: () => {},
-   *     onFailure: () => {},
-   *   }
-   * }
-   */
-  tasks: Record<string, any>;
+type EventOptions =
+  | {
+      payload?: z.ZodObject<any, any>;
+    }
+  | undefined;
 
-  constructor(events: any) {
+type Events = {
+  [eventName: string]: EventOptions;
+};
+
+type EventName<T extends Events> = keyof T;
+
+type EventHandler<T extends Events, TEventName extends EventName<T>> = {
+  event: TEventName;
+  name: string;
+  handler: (payload?: T[TEventName]["payload"]) => Promise<any>;
+  onSuccess?: (result: any) => void;
+  onFailure?: (error: any) => void;
+};
+
+class DoItPlzClient<T extends Events> {
+  events: T;
+  tasks: {
+    [K in EventName<T>]?: EventHandler<T, K>;
+  } = {};
+
+  constructor(events: T) {
     this.events = events;
-    this.tasks = {};
   }
 
-  register = (tasks: Record<string, any>) => {
+  register = (
+    tasks: Record<string, Omit<EventHandler<T, EventName<T>>, "name">>
+  ) => {
     Object.entries(tasks).forEach(([name, handler]) => {
-      this.tasks[handler.event] = handler;
+      this.tasks[handler.event] = {
+        name,
+        ...handler,
+      };
     });
     return this;
   };
 
-  on = (event: any) => {
+  on = <TEventName extends EventName<T>>(event: TEventName) => {
     return {
-      handle: (handler: any) => {
+      handle: (handler: EventHandler<T, TEventName>["handler"]) => {
         return {
-          // Do we really need to do this nested thing?
-          // What if we want something more than onSuccess and onFailure? eek.
-          onSuccess: (onSuccess: any) => {
+          onSuccess: (onSuccess: EventHandler<T, TEventName>["onSuccess"]) => {
             return {
-              onFailure: (onFailure: any) => {
+              onFailure: (
+                onFailure: EventHandler<T, TEventName>["onFailure"]
+              ) => {
                 return {
                   event,
                   handler,
@@ -46,7 +63,7 @@ class DoItPlzClient {
               onSuccess,
             };
           },
-          onFailure: (onFailure: any) => {
+          onFailure: (onFailure: EventHandler<T, TEventName>["onFailure"]) => {
             return {
               event,
               handler,
@@ -60,27 +77,27 @@ class DoItPlzClient {
     };
   };
 
-  /**
-   *
-   * This currently only fires events locally and does not
-   * do any remote calls. This is mostly here for shape definition
-   * and refining types throughout.
-   *
-   * @param event
-   * @param payload
-   */
-  fire = async (event: any, payload?: any) => {
+  fire = async <TEventName extends EventName<T>>(
+    event: TEventName,
+    payload?: T[TEventName]["payload"]
+  ) => {
+    const handler = this.tasks[event];
+    if (!handler) {
+      throw new Error(`No event registered for ${String(event)}`);
+    }
+
     const {
-      handler,
+      handler: eventHandler,
       onSuccess = () => {},
       onFailure = () => {},
-    } = this.tasks[event];
-    await handler(payload)
+    } = handler;
+
+    await eventHandler(payload)
       .then((res: any) => onSuccess(res))
       .catch((err: any) => onFailure(err));
   };
 }
 
-export const initDoItPlz = function (events: any, context?: unknown) {
+export const initDoItPlz = <T extends Events>(events: T) => {
   return new DoItPlzClient(events);
 };

@@ -9,7 +9,7 @@ const dip = initDoItPlz({
       label: z.string(),
     }),
   },
-  test2: undefined,
+  test2: {},
 });
 dip.register({
   add: dip
