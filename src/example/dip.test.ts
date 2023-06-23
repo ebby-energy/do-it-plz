@@ -10,6 +10,9 @@ const dip = initDoItPlz({
     }),
   },
   "removed-number": {},
+  "received-string": {
+    payload: z.string(),
+  },
 });
 dip.register({
   incrementCount: dip
@@ -20,8 +23,11 @@ dip.register({
     })
     .onSuccess((result) => console.log(result))
     .onFailure((err) => console.log(err)),
-  logLabel: dip.on("added-number").handle(async (payload) => {
-    console.log(payload?.label);
+  logLabel: dip.on("added-number").handle(async ({ label }) => {
+    console.log(label);
+  }),
+  eatTaco: dip.on("received-string").handle(async (payload) => {
+    console.log(payload);
   }),
   decrementCount: dip.on("removed-number").handle(async () => {
     count--;

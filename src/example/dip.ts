@@ -1,13 +1,11 @@
-import { ZodTypeAny, z } from "zod";
+import { z } from "zod";
 
-type EventOptions =
-  | {
-      payload?: z.ZodObject<any, any>;
-    }
-  | undefined;
+type EventOptions = {
+  payload?: z.ZodTypeAny;
+};
 
 type Events = {
-  [eventName: string]: EventOptions;
+  [eventName: string]: EventOptions | undefined;
 };
 
 type EventName<T extends Events> = keyof T;
@@ -16,15 +14,15 @@ type EventPayload<
   TEvents,
   TEventName extends keyof TEvents
 > = TEvents[TEventName] extends {
-  payload: ZodTypeAny;
+  payload: z.ZodTypeAny;
 }
   ? z.infer<TEvents[TEventName]["payload"]>
-  : undefined;
+  : never;
 
 type EventHandler<T extends Events, TEventName extends EventName<T>> = {
   event: TEventName;
   name: string;
-  handler: (payload?: EventPayload<T, TEventName>) => Promise<any>;
+  handler: (payload: EventPayload<T, TEventName>) => Promise<any>;
   onSuccess?: (result: any) => void;
   onFailure?: (error: any) => void;
 };
@@ -105,9 +103,9 @@ class DoItPlzClient<TEvents extends Events = Events> {
       // Maybe this shouldn't be an error...
       throw new Error(`No event registered for ${String(event)}`);
     }
-    const eventPayload = this.events[event]?.payload;
-    if (eventPayload) {
-      eventPayload.parse(payload);
+    const payloadSchema = this.events[event]?.payload;
+    if (payloadSchema) {
+      payloadSchema.parse(payload);
     }
 
     for (const handler of handlers) {
@@ -117,7 +115,7 @@ class DoItPlzClient<TEvents extends Events = Events> {
         onFailure = () => {},
       } = handler;
 
-      await eventHandler(payload)
+      await eventHandler(payload as any)
         .then((res: any) => onSuccess(res))
         .catch((err: any) => onFailure(err));
     }
