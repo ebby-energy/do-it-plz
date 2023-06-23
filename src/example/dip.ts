@@ -32,7 +32,7 @@ type EventHandler<T extends Events, TEventName extends EventName<T>> = {
 class DoItPlzClient<TEvents extends Events = Events> {
   events: TEvents;
   tasks: {
-    [K in EventName<TEvents>]?: EventHandler<TEvents, K>;
+    [K in EventName<TEvents>]?: EventHandler<TEvents, K>[];
   } = {};
 
   constructor(events: TEvents) {
@@ -46,10 +46,13 @@ class DoItPlzClient<TEvents extends Events = Events> {
     >
   ) => {
     Object.entries(tasks).forEach(([name, handler]) => {
-      this.tasks[handler.event] = {
+      if (!this.tasks[handler.event]) {
+        this.tasks[handler.event] = [];
+      }
+      this.tasks[handler.event]!.push({
         name,
         ...handler,
-      };
+      });
     });
     return this;
   };
@@ -97,8 +100,9 @@ class DoItPlzClient<TEvents extends Events = Events> {
     event: TEventName,
     payload?: EventPayload<TEvents, TEventName>
   ) => {
-    const handler = this.tasks[event];
-    if (!handler) {
+    const handlers = this.tasks[event];
+    if (!handlers) {
+      // Maybe this shouldn't be an error...
       throw new Error(`No event registered for ${String(event)}`);
     }
     const eventPayload = this.events[event]?.payload;
@@ -106,15 +110,17 @@ class DoItPlzClient<TEvents extends Events = Events> {
       eventPayload.parse(payload);
     }
 
-    const {
-      handler: eventHandler,
-      onSuccess = () => {},
-      onFailure = () => {},
-    } = handler;
+    for (const handler of handlers) {
+      const {
+        handler: eventHandler,
+        onSuccess = () => {},
+        onFailure = () => {},
+      } = handler;
 
-    await eventHandler(payload)
-      .then((res: any) => onSuccess(res))
-      .catch((err: any) => onFailure(err));
+      await eventHandler(payload)
+        .then((res: any) => onSuccess(res))
+        .catch((err: any) => onFailure(err));
+    }
   };
 }
 
