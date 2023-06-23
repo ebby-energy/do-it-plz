@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { ZodTypeAny, z } from "zod";
 
 type EventOptions =
   | {
@@ -12,26 +12,38 @@ type Events = {
 
 type EventName<T extends Events> = keyof T;
 
+type EventPayload<
+  TEvents,
+  TEventName extends keyof TEvents
+> = TEvents[TEventName] extends {
+  payload: ZodTypeAny;
+}
+  ? z.infer<TEvents[TEventName]["payload"]>
+  : undefined;
+
 type EventHandler<T extends Events, TEventName extends EventName<T>> = {
   event: TEventName;
   name: string;
-  handler: (payload?: T[TEventName]["payload"]) => Promise<any>;
+  handler: (payload?: EventPayload<T, TEventName>) => Promise<any>;
   onSuccess?: (result: any) => void;
   onFailure?: (error: any) => void;
 };
 
-class DoItPlzClient<T extends Events> {
-  events: T;
+class DoItPlzClient<TEvents extends Events = Events> {
+  events: TEvents;
   tasks: {
-    [K in EventName<T>]?: EventHandler<T, K>;
+    [K in EventName<TEvents>]?: EventHandler<TEvents, K>;
   } = {};
 
-  constructor(events: T) {
+  constructor(events: TEvents) {
     this.events = events;
   }
 
   register = (
-    tasks: Record<string, Omit<EventHandler<T, EventName<T>>, "name">>
+    tasks: Record<
+      string,
+      Omit<EventHandler<TEvents, EventName<TEvents>>, "name">
+    >
   ) => {
     Object.entries(tasks).forEach(([name, handler]) => {
       this.tasks[handler.event] = {
@@ -42,14 +54,16 @@ class DoItPlzClient<T extends Events> {
     return this;
   };
 
-  on = <TEventName extends EventName<T>>(event: TEventName) => {
+  on = <TEventName extends EventName<TEvents>>(event: TEventName) => {
     return {
-      handle: (handler: EventHandler<T, TEventName>["handler"]) => {
+      handle: (handler: EventHandler<TEvents, TEventName>["handler"]) => {
         return {
-          onSuccess: (onSuccess: EventHandler<T, TEventName>["onSuccess"]) => {
+          onSuccess: (
+            onSuccess: EventHandler<TEvents, TEventName>["onSuccess"]
+          ) => {
             return {
               onFailure: (
-                onFailure: EventHandler<T, TEventName>["onFailure"]
+                onFailure: EventHandler<TEvents, TEventName>["onFailure"]
               ) => {
                 return {
                   event,
@@ -63,7 +77,9 @@ class DoItPlzClient<T extends Events> {
               onSuccess,
             };
           },
-          onFailure: (onFailure: EventHandler<T, TEventName>["onFailure"]) => {
+          onFailure: (
+            onFailure: EventHandler<TEvents, TEventName>["onFailure"]
+          ) => {
             return {
               event,
               handler,
@@ -77,9 +93,9 @@ class DoItPlzClient<T extends Events> {
     };
   };
 
-  fire = async <TEventName extends EventName<T>>(
+  fire = async <TEventName extends EventName<TEvents>>(
     event: TEventName,
-    payload?: T[TEventName]["payload"]
+    payload?: EventPayload<TEvents, TEventName>
   ) => {
     const handler = this.tasks[event];
     if (!handler) {
@@ -98,6 +114,6 @@ class DoItPlzClient<T extends Events> {
   };
 }
 
-export const initDoItPlz = <T extends Events>(events: T) => {
-  return new DoItPlzClient(events);
+export const initDoItPlz = <TEvents extends Events>(events: TEvents) => {
+  return new DoItPlzClient<TEvents>(events);
 };
