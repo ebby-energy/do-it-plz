@@ -101,6 +101,10 @@ class DoItPlzClient<TEvents extends Events = Events> {
     if (!handler) {
       throw new Error(`No event registered for ${String(event)}`);
     }
+    const eventPayload = this.events[event]?.payload;
+    if (eventPayload) {
+      eventPayload.parse(payload);
+    }
 
     const {
       handler: eventHandler,
