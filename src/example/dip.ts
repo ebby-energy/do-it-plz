@@ -122,6 +122,21 @@ class DoItPlzClient<TEvents extends Events = Events> {
   };
 }
 
+/**
+ *
+ * @param events The events that can be fired to trigger handlers
+ * @returns A DoItPlzClient instance
+ * @example
+ * const dip = initDoItPlz({
+ *   "user-signup": {
+ *     payload: z.object({
+ *       userId: z.string().uuid(),
+ *       email: z.string().email(),
+ *     }),
+ *   },
+ *   "user-count-needs-update": {},
+ * });
+ */
 export const initDoItPlz = <TEvents extends Events>(events: TEvents) => {
   return new DoItPlzClient<TEvents>(events);
 };
