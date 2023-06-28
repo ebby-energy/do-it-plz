@@ -13,6 +13,8 @@ const dip = initDoItPlz({
   "received-string": {
     payload: z.string(),
   },
+  "fever-detected": {},
+  "needs-more-cowbell": {},
 });
 dip.register({
   incrementCount: dip
@@ -31,6 +33,17 @@ dip.register({
   }),
   decrementCount: dip.on("removed-number").handle(async () => {
     count--;
+  }),
+  checkForFever: dip
+    .on("fever-detected")
+    .handle(async () => {
+      console.log("fever detected");
+    })
+    .onSuccess(() => {
+      dip.fire("needs-more-cowbell");
+    }),
+  moreCowbell: dip.on("needs-more-cowbell").handle(async () => {
+    console.log("dink dink dink dink");
   }),
 });
 
@@ -69,4 +82,12 @@ it("should fail with invalid payload type", async () => {
 it("should fail with invalid payload key", async () => {
   // @ts-expect-error payload should have a label key
   await expect(dip.fire("added-number", { label2: "123" })).rejects.toThrow();
+});
+
+it("should fire second event from on success", async () => {
+  const consoleLog = console.log;
+  console.log = vitest.fn();
+  await dip.fire("fever-detected");
+  expect(console.log).toHaveBeenCalledWith("dink dink dink dink");
+  console.log = consoleLog;
 });
