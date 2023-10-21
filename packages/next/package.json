@@ -1,0 +1,12 @@
+{
+  "name": "@do-it-plz/next",
+  "version": "0.0.0",
+  "main": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "@do-it-plz/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "next": "^13.4.x"
+  }
+}
