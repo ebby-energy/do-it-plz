@@ -1,0 +1,17 @@
+{
+  "name": "@do-it-plz/client",
+  "version": "0.0.0",
+  "licence": "MIT",
+  "main": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "@do-it-plz/core": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest": "^0.32.2"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  }
+}
