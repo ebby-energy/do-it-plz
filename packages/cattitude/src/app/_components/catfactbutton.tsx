@@ -5,6 +5,7 @@ async function fetchCatFacts() {
     window.location.origin + "/api/do-it-plz/fetchCatFact",
     {
       method: "POST",
+      body: JSON.stringify({}),
     }
   );
   const result = await response.json();
