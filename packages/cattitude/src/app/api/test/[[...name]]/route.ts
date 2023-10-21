@@ -6,7 +6,13 @@ const createClient = () => {
     { params }: { params: { name?: string[] } }
   ) => {
     const { name } = params;
-    return NextResponse.json({ name });
+    const taskName = name && name[0] ? name[0] : "";
+    let payload = undefined;
+    // check for empty body
+    if (request.headers.get("content-length") !== "0") {
+      payload = await request.json();
+    }
+    return NextResponse.json({ taskName, payload });
   };
 
   return {
