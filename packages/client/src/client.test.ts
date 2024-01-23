@@ -1,6 +1,8 @@
-import { expect, it, vitest } from "vitest";
+import { expect, it, mock } from "bun:test";
 import { z } from "zod";
 import { initDoItPlz } from "./client";
+
+console.log = mock(() => {});
 
 let count = 0;
 const dip = initDoItPlz({
@@ -54,54 +56,46 @@ it("should work for event without payload", async () => {
 });
 
 it("should fail without required payload", async () => {
-  await expect(dip.fireEvent("added-number")).rejects.toThrow();
+  expect(dip.fireEvent("added-number")).rejects.toThrow();
 });
 
 it("should fail with invalid event name", async () => {
   // @ts-expect-error intentionally invalid event name
-  await expect(dip.fireEvent("invalid-event-name")).rejects.toThrow();
+  expect(dip.fireEvent("invalid-event-name")).rejects.toThrow();
 });
 
 it("should console log on success", async () => {
-  const consoleLog = console.log;
-  console.log = vitest.fn();
   await dip.fireEvent("added-number", { label: "blah" });
+  // @ts-expect-error bun types doesn't seem to have toHaveBeenCalledWith
   expect(console.log).toHaveBeenCalledWith("done incrementing");
-  console.log = consoleLog;
 });
 
 it("should print log message from string payload", async () => {
-  const consoleLog = console.log;
-  console.log = vitest.fn();
   await dip.fireEvent("received-string", "hello");
+  // @ts-expect-error bun types doesn't seem to have toHaveBeenCalledWith
   expect(console.log).toHaveBeenCalledWith("LOG: string is hello");
-  console.log = consoleLog;
 });
 
 it("should print log message from object payload", async () => {
-  const consoleLog = console.log;
-  console.log = vitest.fn();
   await dip.fireEvent("added-number", { label: "blah" });
+  // @ts-expect-error bun types doesn't seem to have toHaveBeenCalledWith
   expect(console.log).toHaveBeenCalledWith("LOG: label is blah");
-  console.log = consoleLog;
 });
 
 it("should fail with invalid payload type", async () => {
   // @ts-expect-error label should be a string
-  await expect(dip.fireEvent("added-number", { label: 123 })).rejects.toThrow();
+  expect(dip.fireEvent("added-number", { label: 123 })).rejects.toThrow();
 });
 
 it("should fail with invalid payload key", async () => {
-  await expect(
+  expect(
     // @ts-expect-error payload should have a label key
     dip.fireEvent("added-number", { label2: "123" })
   ).rejects.toThrow();
 });
 
-it("should fire second event from plz in first handler", async () => {
-  const consoleLog = console.log;
-  console.log = vitest.fn();
+it.only("should fire second event from plz in first handler", async () => {
   await dip.fireEvent("fever-detected");
+  // @ts-expect-error bun types doesn't seem to have toHaveBeenCalledWith
   expect(console.log).toHaveBeenCalledWith("dink dink dink dink");
-  console.log = consoleLog;
 });
