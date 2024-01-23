@@ -1,8 +1,9 @@
 import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 import type { Metadata } from "next";
-import { ThemeProvider } from "./theme-provider";
 import { Atkinson_Hyperlegible } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "./theme-provider";
 
 const atkinson = Atkinson_Hyperlegible({ weight: "400", subsets: ["latin"] });
 
@@ -17,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider appearance={{ baseTheme: dark }}>
       <html lang="en">
         <body className={atkinson.className}>
           <ThemeProvider attribute="class" defaultTheme="dark">
