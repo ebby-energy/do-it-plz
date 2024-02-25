@@ -66,19 +66,16 @@ it("should fail with invalid event name", async () => {
 
 it("should console log on success", async () => {
   await dip.fireEvent("added-number", { label: "blah" });
-  // @ts-expect-error bun types doesn't seem to have toHaveBeenCalledWith
   expect(console.log).toHaveBeenCalledWith("done incrementing");
 });
 
 it("should print log message from string payload", async () => {
   await dip.fireEvent("received-string", "hello");
-  // @ts-expect-error bun types doesn't seem to have toHaveBeenCalledWith
   expect(console.log).toHaveBeenCalledWith("LOG: string is hello");
 });
 
 it("should print log message from object payload", async () => {
   await dip.fireEvent("added-number", { label: "blah" });
-  // @ts-expect-error bun types doesn't seem to have toHaveBeenCalledWith
   expect(console.log).toHaveBeenCalledWith("LOG: label is blah");
 });
 
@@ -94,8 +91,7 @@ it("should fail with invalid payload key", async () => {
   ).rejects.toThrow();
 });
 
-it.only("should fire second event from plz in first handler", async () => {
+it("should fire second event from plz in first handler", async () => {
   await dip.fireEvent("fever-detected");
-  // @ts-expect-error bun types doesn't seem to have toHaveBeenCalledWith
   expect(console.log).toHaveBeenCalledWith("dink dink dink dink");
 });
