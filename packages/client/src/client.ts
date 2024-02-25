@@ -34,10 +34,22 @@ type SleepOptions = {
   minutes?: number;
 };
 
+type PlzOptions = {
+  /**
+   * Number of retries to attempt before failing (default: 3)
+   */
+  retries?: number;
+};
+
+const DEFAULT_PLZ_OPTIONS = {
+  retries: 3,
+} satisfies PlzOptions;
+
 type Args<T extends Events, TEventName extends EventName<T>> = {
   plz: <HandlerResult>(
     name: string,
-    func: () => Promise<HandlerResult> | HandlerResult
+    func: () => Promise<HandlerResult> | HandlerResult,
+    options?: PlzOptions
   ) => Promise<HandlerResult> | HandlerResult;
   sleep: (opts: RequireAtLeastOne<SleepOptions>) => Promise<void>;
   payload: EventPayload<T, TEventName>;
@@ -79,6 +91,19 @@ const sleep = async (opts: RequireAtLeastOne<SleepOptions>) => {
 type ClientOptions<TEvents> = {
   events: TEvents;
 };
+
+type StackSuccess = {
+  name: string;
+  status: "success";
+  result: any;
+};
+type StackError = {
+  name: string;
+  status: "error";
+  attempt: number;
+  error?: Error;
+};
+export type Stack = Array<StackSuccess | StackError>;
 
 export class DoItPlzClient<TEvents extends Events = Events> {
   private events: TEvents = {} as TEvents;
@@ -168,7 +193,11 @@ export class DoItPlzClient<TEvents extends Events = Events> {
   };
 
   // TODO: Figure out how to type the payload
-  callTask = async (taskName: string, payload?: any) => {
+  callTask = async (
+    taskName: string,
+    payload?: any,
+    stack: Stack = [] as Stack
+  ) => {
     const handler = this.tasks[taskName];
     if (!handler) {
       throw new DIPError({
@@ -184,7 +213,42 @@ export class DoItPlzClient<TEvents extends Events = Events> {
         message: `Invalid payload for "${String(taskName)}"`,
       });
     }
-    await handler.taskHandler({ plz, sleep, payload: validated.data });
+    await handler.taskHandler({
+      plz: async <HandlerResult>(
+        name: string,
+        func: () => Promise<HandlerResult> | HandlerResult,
+        subTaskOptions?: PlzOptions
+      ) => {
+        const options = Object.assign({}, DEFAULT_PLZ_OPTIONS, subTaskOptions);
+        const subtask = stack.find((s) => s.name === name);
+        if (subtask?.status === "success") {
+          return subtask.result;
+        }
+        const { attempt } = subtask ?? { attempt: 0 };
+        const { retries } = options;
+        if (attempt < 0) {
+          throw new DIPError({
+            code: "BAD_REQUEST",
+            message: "Attempt must be a positive number",
+          });
+        }
+        if (retries < 0) {
+          throw new DIPError({
+            code: "BAD_REQUEST",
+            message: "Retries must be a positive number",
+          });
+        }
+        if (attempt !== 0 && attempt >= retries) {
+          throw new DIPError({
+            code: "TOO_MANY_ATTEMPTS",
+            message: `Exceeded maximum retries, ${attempt} / ${retries}`,
+          });
+        }
+        return await plz(name, func);
+      },
+      sleep,
+      payload: validated.data,
+    });
   };
 }
 
