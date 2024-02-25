@@ -1,9 +1,10 @@
 const errors = [
   "BAD_REQUEST",
-  "TIMEOUT",
   "EVENT_NOT_FOUND",
-  "TASK_NOT_FOUND",
   "INVALID_PAYLOAD",
+  "TASK_NOT_FOUND",
+  "TIMEOUT",
+  "TOO_MANY_ATTEMPTS",
   "UNKNOWN_ERROR",
 ] as const;
 

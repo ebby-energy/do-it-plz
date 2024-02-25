@@ -1,6 +1,7 @@
 import { expect, it, mock } from "bun:test";
 import { z } from "zod";
-import { initDoItPlz } from "./client";
+import { DIPError } from "../../core/src";
+import { Stack, initDoItPlz } from "./client";
 
 console.log = mock(() => {});
 
@@ -17,6 +18,7 @@ const dip = initDoItPlz({
   },
   "fever-detected": {},
   "needs-more-cowbell": {},
+  "test-retry": {},
 });
 dip.register({
   incrementCount: dip.on({ event: "added-number" }).doIt(async ({ plz }) => {
@@ -41,6 +43,16 @@ dip.register({
   }),
   moreCowbell: dip.on({ event: "needs-more-cowbell" }).doIt(() => {
     console.log("dink dink dink dink");
+  }),
+  testRetry: dip.on({ event: "test-retry" }).doIt(async ({ plz }) => {
+    const first = await plz("Default retries", () => 4);
+    const second = await plz("Two retries", () => first + 4, {
+      retries: 2,
+    });
+    const third = await plz("Zero retries", () => second + 4, {
+      retries: 0,
+    });
+    console.log(`result: ${third}`);
   }),
 });
 
@@ -94,4 +106,84 @@ it("should fail with invalid payload key", async () => {
 it("should fire second event from plz in first handler", async () => {
   await dip.fireEvent("fever-detected");
   expect(console.log).toHaveBeenCalledWith("dink dink dink dink");
+});
+
+it("should error when attempts are negative", async () => {
+  expect(
+    dip.callTask("testRetry", {}, [
+      { name: "Two retries", status: "error", attempt: -1 },
+    ])
+  ).rejects.toThrow(
+    new DIPError({
+      code: "BAD_REQUEST",
+      message: "Attempt must be a positive number",
+    })
+  );
+});
+
+it("should error when attempts are greater than allowed retries", async () => {
+  expect(
+    dip.callTask("testRetry", {}, [
+      { name: "Two retries", status: "error", attempt: 3 },
+    ])
+  ).rejects.toThrow(
+    new DIPError({
+      code: "TOO_MANY_ATTEMPTS",
+      message: "Exceeded maximum retries, 3 / 2",
+    })
+  );
+});
+
+it("should error when attempts are equal allowed retries", async () => {
+  expect(
+    dip.callTask("testRetry", {}, [
+      { name: "Two retries", status: "error", attempt: 2 },
+    ])
+  ).rejects.toThrow(
+    new DIPError({
+      code: "TOO_MANY_ATTEMPTS",
+      message: "Exceeded maximum retries, 2 / 2",
+    })
+  );
+});
+
+it("should error when retries are zero and attempts are greater than zero", async () => {
+  expect(
+    dip.callTask("testRetry", {}, [
+      { name: "Zero retries", status: "error", attempt: 1 },
+    ])
+  ).rejects.toThrow(
+    new DIPError({
+      code: "TOO_MANY_ATTEMPTS",
+      message: "Exceeded maximum retries, 1 / 0",
+    })
+  );
+});
+
+it("should not error when retries are zero and no attempts made yet", async () => {
+  expect(dip.callTask("testRetry", {}, []));
+});
+
+it("should error when attempts are greater than default retries", async () => {
+  expect(
+    dip.callTask("testRetry", {}, [
+      { name: "Default retries", status: "error", attempt: 4 },
+    ])
+  ).rejects.toThrow(
+    new DIPError({
+      code: "TOO_MANY_ATTEMPTS",
+      message: "Exceeded maximum retries, 4 / 3",
+    })
+  );
+});
+
+it.each([
+  [[] as Stack, "result: 12"],
+  [
+    [{ name: "Zero retries", status: "success", result: -2 }] as Stack,
+    "result: -2",
+  ],
+])("should return result from plz stack", async (stack, expected) => {
+  await dip.callTask("testRetry", {}, stack);
+  expect(console.log).toHaveBeenCalledWith(expected);
 });
