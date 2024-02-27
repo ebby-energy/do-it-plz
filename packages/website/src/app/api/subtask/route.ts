@@ -1,5 +1,7 @@
 import { withAxiom, type AxiomRequest } from "next-axiom";
 
+export const runtime = "nodejs";
+
 export const POST = withAxiom(async (req: AxiomRequest) => {
   const body = await req.json();
   const log = req.log.with({ body });
