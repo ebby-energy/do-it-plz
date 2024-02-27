@@ -1,6 +1,7 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import type { Metadata } from "next";
+import { AxiomWebVitals } from "next-axiom";
 import { Atkinson_Hyperlegible } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./theme-provider";
@@ -19,11 +20,12 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider appearance={{ baseTheme: dark }}>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body className={atkinson.className}>
           <ThemeProvider attribute="class" defaultTheme="dark">
             {children}
           </ThemeProvider>
+          <AxiomWebVitals />
         </body>
       </html>
     </ClerkProvider>
