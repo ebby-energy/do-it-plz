@@ -33,11 +33,8 @@ export default async function OGImage() {
         />
         <div tw="flex flex-col items-center justify-center">
           <p
-            tw="mb-0"
-            style={{
-              color: "hsl(70 100% 50%)",
-              fontFamily: "AtkinsonHyperlegible-Bold",
-            }}
+            tw="mb-0 text-green-400"
+            style={{ fontFamily: "AtkinsonHyperlegible-Bold" }}
           >
             do-it-plz.com
           </p>
