@@ -15,7 +15,7 @@ dip.register({
   fetchCatFact: dip.on({ event: "request cat fact" }).doIt(async ({ plz }) => {
     const catFactUrl = await plz(
       "get cat fact url",
-      () => "https://catfact.ninja/fact"
+      () => "https://catfact.ninja/fact",
     );
     const fact = await plz("fetch cat fact", async () => {
       const response = await fetch(catFactUrl);
@@ -38,7 +38,7 @@ dip.register({
       const { fact, length } = payload;
 
       await plz("check cat fact length", () =>
-        console.assert(length === fact.length)
+        console.assert(length === fact.length),
       );
 
       await plz("log cat fact", () => console.log(fact));

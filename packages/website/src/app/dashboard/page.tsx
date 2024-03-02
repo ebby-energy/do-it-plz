@@ -3,10 +3,10 @@ import { OrganizationSwitcher, UserButton, auth } from "@clerk/nextjs";
 export default function Page() {
   const { orgId, userId } = auth();
   return (
-    <main className="flex min-h-screen flex-col items-center justify-start pt-0 p-24">
-      <div className="flex flex-row w-screen items-center justify-between px-4 pb-24">
+    <main className="flex min-h-screen flex-col items-center justify-start p-24 pt-0">
+      <div className="flex w-screen flex-row items-center justify-between px-4 pb-24">
         do-it-plz
-        <div className="flex h-full gap-x-8 flex-row items-center justify-center">
+        <div className="flex h-full flex-row items-center justify-center gap-x-8">
           <OrganizationSwitcher />
           <UserButton />
         </div>

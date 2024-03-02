@@ -12,7 +12,7 @@ export const createDoItPlzRouteHandler = ({
 }: DoItPlzRouteHandlerOpts) => {
   const POST = async (
     request: Request,
-    { params }: { params: { name?: string[] } }
+    { params }: { params: { name?: string[] } },
   ) => {
     const { name } = params;
     const taskName = name && name[0] ? name[0] : "";
@@ -32,7 +32,7 @@ export const createDoItPlzRouteHandler = ({
             message: err.message,
             code: err.code,
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
       return NextResponse.json(
@@ -41,7 +41,7 @@ export const createDoItPlzRouteHandler = ({
           message: "INTERNAL SERVER ERROR",
           code: "UNKNOWN_ERROR",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
     return NextResponse.json({ success: true }, { status: 200 });

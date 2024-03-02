@@ -49,7 +49,7 @@ type Args<T extends Events, TEventName extends EventName<T>> = {
   plz: <HandlerResult>(
     name: string,
     func: () => Promise<HandlerResult> | HandlerResult,
-    options?: PlzOptions
+    options?: PlzOptions,
   ) => Promise<HandlerResult> | HandlerResult;
   sleep: (opts: RequireAtLeastOne<SleepOptions>) => Promise<void>;
   payload: EventPayload<T, TEventName>;
@@ -62,16 +62,16 @@ type EventHandler<T extends Events, TEventName extends EventName<T>> = {
 
 async function plz<HandlerResult>(
   subTaskName: string,
-  subTaskHandler: () => Promise<HandlerResult>
+  subTaskHandler: () => Promise<HandlerResult>,
 ): Promise<HandlerResult>;
 function plz<HandlerResult>(
   subTaskName: string,
-  subTaskHandler: () => HandlerResult
+  subTaskHandler: () => HandlerResult,
 ): HandlerResult;
 
 async function plz<HandlerResult>(
   subTaskName: string,
-  subTaskHandler: () => HandlerResult | Promise<HandlerResult>
+  subTaskHandler: () => HandlerResult | Promise<HandlerResult>,
 ): Promise<HandlerResult | void> {
   if (subTaskHandler instanceof Function) {
     console.log("SUBTASK START: ", subTaskName);
@@ -115,7 +115,7 @@ export class DoItPlzClient<TEvents extends Events = Events> {
   }
 
   register = (
-    tasks: Record<string, EventHandler<TEvents, EventName<TEvents>>>
+    tasks: Record<string, EventHandler<TEvents, EventName<TEvents>>>,
   ) => {
     Object.entries(tasks).forEach(([taskName, taskHandler]) => {
       this.tasks[taskName] = taskHandler;
@@ -144,7 +144,7 @@ export class DoItPlzClient<TEvents extends Events = Events> {
 
   private parsePayload = <TEventName extends EventName<TEvents>>(
     event: TEventName,
-    payload?: EventPayload<TEvents, TEventName>
+    payload?: EventPayload<TEvents, TEventName>,
   ) => {
     const payloadSchema = this.events[event]?.payload;
     if (!payloadSchema)
@@ -156,7 +156,7 @@ export class DoItPlzClient<TEvents extends Events = Events> {
 
   fireEvent = async <TEventName extends EventName<TEvents>>(
     event: TEventName,
-    payload?: EventPayload<TEvents, TEventName>
+    payload?: EventPayload<TEvents, TEventName>,
   ) => {
     console.log("EVENT FIRED  : ", event);
     try {
@@ -196,7 +196,7 @@ export class DoItPlzClient<TEvents extends Events = Events> {
   callTask = async (
     taskName: string,
     payload?: any,
-    stack: Stack = [] as Stack
+    stack: Stack = [] as Stack,
   ) => {
     const handler = this.tasks[taskName];
     if (!handler) {
@@ -217,7 +217,7 @@ export class DoItPlzClient<TEvents extends Events = Events> {
       plz: async <HandlerResult>(
         name: string,
         func: () => Promise<HandlerResult> | HandlerResult,
-        subTaskOptions?: PlzOptions
+        subTaskOptions?: PlzOptions,
       ) => {
         const options = Object.assign({}, DEFAULT_PLZ_OPTIONS, subTaskOptions);
         const subtask = stack.find((s) => s.name === name);

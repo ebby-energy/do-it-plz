@@ -6,7 +6,7 @@ async function fetchCatFacts() {
     {
       method: "POST",
       body: JSON.stringify({}),
-    }
+    },
   );
   const result = await response.json();
   console.log(result);

@@ -99,7 +99,7 @@ it("should fail with invalid payload type", async () => {
 it("should fail with invalid payload key", async () => {
   expect(
     // @ts-expect-error payload should have a label key
-    dip.fireEvent("added-number", { label2: "123" })
+    dip.fireEvent("added-number", { label2: "123" }),
   ).rejects.toThrow();
 });
 
@@ -112,12 +112,12 @@ it("should error when attempts are negative", async () => {
   expect(
     dip.callTask("testRetry", {}, [
       { name: "Two retries", status: "error", attempt: -1 },
-    ])
+    ]),
   ).rejects.toThrow(
     new DIPError({
       code: "BAD_REQUEST",
       message: "Attempt must be a positive number",
-    })
+    }),
   );
 });
 
@@ -125,12 +125,12 @@ it("should error when attempts are greater than allowed retries", async () => {
   expect(
     dip.callTask("testRetry", {}, [
       { name: "Two retries", status: "error", attempt: 3 },
-    ])
+    ]),
   ).rejects.toThrow(
     new DIPError({
       code: "TOO_MANY_ATTEMPTS",
       message: "Exceeded maximum retries, 3 / 2",
-    })
+    }),
   );
 });
 
@@ -138,12 +138,12 @@ it("should error when attempts are equal allowed retries", async () => {
   expect(
     dip.callTask("testRetry", {}, [
       { name: "Two retries", status: "error", attempt: 2 },
-    ])
+    ]),
   ).rejects.toThrow(
     new DIPError({
       code: "TOO_MANY_ATTEMPTS",
       message: "Exceeded maximum retries, 2 / 2",
-    })
+    }),
   );
 });
 
@@ -151,12 +151,12 @@ it("should error when retries are zero and attempts are greater than zero", asyn
   expect(
     dip.callTask("testRetry", {}, [
       { name: "Zero retries", status: "error", attempt: 1 },
-    ])
+    ]),
   ).rejects.toThrow(
     new DIPError({
       code: "TOO_MANY_ATTEMPTS",
       message: "Exceeded maximum retries, 1 / 0",
-    })
+    }),
   );
 });
 
@@ -168,12 +168,12 @@ it("should error when attempts are greater than default retries", async () => {
   expect(
     dip.callTask("testRetry", {}, [
       { name: "Default retries", status: "error", attempt: 4 },
-    ])
+    ]),
   ).rejects.toThrow(
     new DIPError({
       code: "TOO_MANY_ATTEMPTS",
       message: "Exceeded maximum retries, 4 / 3",
-    })
+    }),
   );
 });
 
