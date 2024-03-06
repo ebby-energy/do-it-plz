@@ -7,8 +7,11 @@ const catFactSchema = z.object({
 });
 
 const dip = initDoItPlz({
-  "request cat fact": {},
-  "new cat fact": { payload: catFactSchema },
+  events: {
+    "request cat fact": {},
+    "new cat fact": { payload: catFactSchema },
+  },
+  options: { clientId: "cattitude" },
 });
 
 dip.register({
