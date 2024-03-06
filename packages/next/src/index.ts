@@ -1,8 +1,33 @@
+import {
+  DoItPlzClient,
+  Options,
+  type Events,
+} from "@do-it-plz/client/src/client";
+import { DIPError } from "@do-it-plz/core/src/error";
+import pkg from "@do-it-plz/next/package.json";
 import { NextResponse } from "next/server";
-import { DoItPlzClient } from "../../client/src/client";
-import { DIPError } from "../../core/src/error";
 
 type Client = DoItPlzClient<any>;
+
+type InitDoItPlz<TEvents> = {
+  events: TEvents;
+  options?: { clientId?: string };
+};
+export const initDoItPlz = <TEvents extends Events>({
+  events,
+  options,
+}: InitDoItPlz<TEvents>) => {
+  const clientId = options?.clientId ?? process.env.DO_IT_PLZ_CLIENT_ID;
+  if (!clientId) {
+    throw new Error("DO_IT_PLZ_CLIENT_ID is not set");
+  }
+  const clientOptions = {
+    clientId,
+    clientName: pkg.name,
+    clientVersion: pkg.version,
+  } satisfies Options;
+  return new DoItPlzClient<TEvents>({ events, options: clientOptions });
+};
 
 type DoItPlzRouteHandlerOpts = {
   client: Client;

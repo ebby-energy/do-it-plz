@@ -1,6 +1,6 @@
 import { withAxiom, type AxiomRequest } from "next-axiom";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 export const POST = withAxiom(async (req: AxiomRequest) => {
   const body = await req.json();

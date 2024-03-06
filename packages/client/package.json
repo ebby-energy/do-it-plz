@@ -5,9 +5,11 @@
   "main": "index.ts",
   "types": "index.ts",
   "dependencies": {
-    "@do-it-plz/core": "workspace:*"
+    "@do-it-plz/core": "workspace:*",
+    "@paralleldrive/cuid2": "^2.2.2"
   },
   "devDependencies": {
+    "msw": "latest",
     "vitest": "^0.32.2"
   },
   "scripts": {
