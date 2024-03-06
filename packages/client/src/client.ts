@@ -268,9 +268,9 @@ export class DoItPlzClient<TEvents extends Events = Events> {
         if (subtask?.status === "success") {
           return subtask.result;
         }
-        const { attempt } = subtask ?? { attempt: 0 };
+        const existingAttempt = subtask?.attempt;
         const { retries } = options;
-        if (attempt < 0) {
+        if (existingAttempt && existingAttempt < 0) {
           throw new DIPError({
             code: "BAD_REQUEST",
             message: "Attempt must be a positive number",
@@ -282,6 +282,7 @@ export class DoItPlzClient<TEvents extends Events = Events> {
             message: "Retries must be a positive number",
           });
         }
+        const attempt = subtask ? subtask.attempt + 1 : 0;
         if (attempt !== 0 && attempt >= retries) {
           throw new DIPError({
             code: "TOO_MANY_ATTEMPTS",
