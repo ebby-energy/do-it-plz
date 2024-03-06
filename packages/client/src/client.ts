@@ -1,5 +1,8 @@
+import pkg from "@do-it-plz/client/package.json";
+import { DIPError } from "@do-it-plz/core/src/error";
 import { SafeParseSuccess, z } from "zod";
-import { DIPError } from "../../core/src/error";
+
+const DO_IT_PLZ_API_URL = "https://do-it-plz.com/api";
 
 type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
   T,
@@ -14,7 +17,7 @@ type EventOptions = {
   payload?: z.ZodTypeAny;
 };
 
-type Events = {
+export type Events = {
   [eventName: string]: EventOptions | undefined;
 };
 
@@ -88,8 +91,16 @@ const sleep = async (opts: RequireAtLeastOne<SleepOptions>) => {
   console.log(opts);
 };
 
+export type Options = {
+  clientId: string;
+  clientName: string;
+  clientVersion: string;
+  remoteUrl?: string;
+};
+
 type ClientOptions<TEvents> = {
   events: TEvents;
+  options: Options;
 };
 
 type StackSuccess = {
@@ -107,11 +118,26 @@ export type Stack = Array<StackSuccess | StackError>;
 
 export class DoItPlzClient<TEvents extends Events = Events> {
   private events: TEvents = {} as TEvents;
+  private packageMetadata: Options;
   private tasks: Record<string, EventHandler<TEvents, EventName<TEvents>>> = {};
   private eventMap: { [K in EventName<TEvents>]?: string[] } = {};
+  private urls: {
+    events: string;
+    tasks: string;
+    subtasks: string;
+  };
 
-  constructor({ events }: ClientOptions<TEvents>) {
+  constructor({
+    events,
+    options: { remoteUrl = DO_IT_PLZ_API_URL, ...packageMetadata },
+  }: ClientOptions<TEvents>) {
     this.events = events;
+    this.packageMetadata = packageMetadata;
+    this.urls = {
+      events: `${remoteUrl}/events`,
+      tasks: `${remoteUrl}/tasks`,
+      subtasks: `${remoteUrl}/subtasks`,
+    };
   }
 
   register = (
@@ -252,6 +278,22 @@ export class DoItPlzClient<TEvents extends Events = Events> {
   };
 }
 
-export const initDoItPlz = <TEvents extends Events>(events: TEvents) => {
-  return new DoItPlzClient<TEvents>({ events });
+type InitDoItPlz<TEvents> = {
+  events: TEvents;
+  options?: { clientId?: string };
+};
+export const initDoItPlz = <TEvents extends Events>({
+  events,
+  options,
+}: InitDoItPlz<TEvents>) => {
+  const clientId = options?.clientId ?? process.env.DO_IT_PLZ_CLIENT_ID;
+  if (!clientId) {
+    throw new Error("DO_IT_PLZ_CLIENT_ID is not set");
+  }
+  const clientOptions = {
+    clientId,
+    clientName: pkg.name,
+    clientVersion: pkg.version,
+  } satisfies Options;
+  return new DoItPlzClient<TEvents>({ events, options: clientOptions });
 };
