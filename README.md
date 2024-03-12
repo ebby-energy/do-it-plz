@@ -1,3 +1,7 @@
 # do-it-plz
 
-Managed distributed task and job queue service on the edge
+TypeScript-friendly managed task runner for serverless Next.js apps.
+
+Ensure runtime safety with strong typing and seamless integration.
+
+Run long-running tasks in your app, not ours.
