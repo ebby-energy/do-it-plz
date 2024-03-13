@@ -1,5 +1,9 @@
-import pkg from "@do-it-plz/client/package.json";
-import { DIPError } from "@do-it-plz/core/src/error";
+import {
+  packageName,
+  packageVersion,
+  // @ts-ignore - this is dynamically generated with `build:package-info`
+} from "@do-it-plz/client/src/__metadata" with { type: "macro" };
+import { DIPError } from "@do-it-plz/core";
 import { createId } from "@paralleldrive/cuid2";
 import { SafeParseSuccess, z } from "zod";
 import { sendEvent, sendPlz } from "./remote-send";
@@ -328,8 +332,8 @@ export const initDoItPlz = <TEvents extends Events>({
   }
   const clientOptions = {
     clientId,
-    clientName: pkg.name,
-    clientVersion: pkg.version,
+    clientName: packageName(),
+    clientVersion: packageVersion(),
   } satisfies Options;
   return new DoItPlzClient<TEvents>({ events, options: clientOptions });
 };
