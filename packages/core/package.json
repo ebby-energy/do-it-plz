@@ -1,11 +1,26 @@
 {
   "name": "@do-it-plz/core",
-  "module": "index.ts",
-  "type": "module",
+  "version": "0.0.1-next.5",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "description": "TypeScript-friendly managed task runner for serverless apps. Ensure runtime safety with strong typing and seamless integration. Run long-running tasks in your app, not ours.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ebby-energy/do-it-plz.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://do-it-plz.com",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "bun run build:bun && bun run build:tsc",
+    "build:bun": "bun build.ts",
+    "build:tsc": "tsc --emitDeclarationOnly --project tsconfig.types.json",
+    "postbuild": "rimraf tsconfig.types.tsbuildinfo"
+  },
   "devDependencies": {
     "bun-types": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
   }
 }

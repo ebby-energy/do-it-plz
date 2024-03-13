@@ -1,10 +1,10 @@
+import { DoItPlzClient, Options, type Events } from "@do-it-plz/client";
+import { DIPError } from "@do-it-plz/core";
 import {
-  DoItPlzClient,
-  Options,
-  type Events,
-} from "@do-it-plz/client/src/client";
-import { DIPError } from "@do-it-plz/core/src/error";
-import pkg from "@do-it-plz/next/package.json";
+  packageName,
+  packageVersion,
+  // @ts-ignore - this is dynamically generated with `build:package-info`
+} from "@do-it-plz/next/src/__metadata" with { type: "macro" };
 import { NextResponse } from "next/server";
 
 type Client = DoItPlzClient<any>;
@@ -23,8 +23,8 @@ export const initDoItPlz = <TEvents extends Events>({
   }
   const clientOptions = {
     clientId,
-    clientName: pkg.name,
-    clientVersion: pkg.version,
+    clientName: packageName(),
+    clientVersion: packageVersion(),
   } satisfies Options;
   return new DoItPlzClient<TEvents>({ events, options: clientOptions });
 };

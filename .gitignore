@@ -174,3 +174,5 @@ dist
 # Finder (MacOS) folder config
 .DS_Store
 
+# Custom package.json metadata file
+**/src/__metadata.ts

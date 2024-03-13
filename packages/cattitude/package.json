@@ -9,8 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@do-it-plz/client": "workspace:*",
-    "@do-it-plz/next": "workspace:*",
+    "@do-it-plz/core": "next",
+    "@do-it-plz/client": "next",
+    "@do-it-plz/next": "next",
     "next": "14.1.0",
     "react": "^18",
     "react-dom": "^18",
