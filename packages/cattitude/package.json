@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@do-it-plz/core": "workspace:*",
     "@do-it-plz/client": "workspace:*",
     "@do-it-plz/next": "workspace:*",
     "next": "14.1.0",

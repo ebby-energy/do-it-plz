@@ -1,4 +1,4 @@
-import { initDoItPlz } from "@do-it-plz/client";
+import { initDoItPlz } from "@do-it-plz/next";
 import * as z from "zod";
 
 const catFactSchema = z.object({
