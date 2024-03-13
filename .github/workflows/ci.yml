@@ -8,8 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build and test
-    timeout-minutes: 15
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -24,4 +23,8 @@ jobs:
       - name: "Build @do-it-plz/next"
         working-directory: packages/next
         run: bun run build
+  test:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
       - run: bun test
