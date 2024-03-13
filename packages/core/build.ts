@@ -3,5 +3,5 @@ await Bun.build({
   outdir: "dist",
   target: "node",
   format: "esm",
-  minify: true,
+  minify: false,
 });

@@ -2,8 +2,8 @@ import { DIPError } from "@do-it-plz/core";
 import type { Stack, StackItem } from "./client";
 
 export const jsonStringifyError = (err: unknown) => {
-  if (err instanceof DIPError) {
-    const { name, message, stack, code } = err;
+  if (err instanceof DIPError || (err instanceof Error && err.name === "DIPError")) {
+    const { name, message, stack, code } = err as DIPError;
     return JSON.stringify({ name, message, stack, code });
   }
   if (err instanceof Error) {

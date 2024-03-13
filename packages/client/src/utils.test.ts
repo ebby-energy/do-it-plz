@@ -1,4 +1,4 @@
-import { DIPError } from "@do-it-plz/core/src/error";
+import { DIPError } from "@do-it-plz/core";
 import { expect, it } from "bun:test";
 import { jsonStringifyError } from "./utils";
 
