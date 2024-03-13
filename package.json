@@ -10,9 +10,8 @@
   ],
   "devDependencies": {
     "bun-types": "latest",
-    "prettier": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
+    "prettier": "latest",
+    "rimraf": "latest",
+    "typescript": "latest"
   }
 }
