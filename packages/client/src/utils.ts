@@ -1,5 +1,5 @@
-import { DIPError } from "@do-it-plz/core/src";
-import { Stack, StackItem } from "..";
+import { DIPError } from "@do-it-plz/core";
+import type { Stack, StackItem } from "./client";
 
 export const jsonStringifyError = (err: unknown) => {
   if (err instanceof DIPError) {
