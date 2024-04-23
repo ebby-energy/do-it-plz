@@ -4,7 +4,8 @@ export const runtime = "edge";
 
 export const POST = withAxiom(async (req: AxiomRequest) => {
   const body = await req.json();
-  const log = req.log.with({ body });
+  const headers = new Headers(req.headers);
+  const log = req.log.with({ body, headers });
   log.info("POSTING with data");
   return Response.json({ success: true });
 });
