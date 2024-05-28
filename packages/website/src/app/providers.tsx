@@ -37,9 +37,6 @@ export function PostHogPageview() {
   return <></>;
 }
 
-type CSPostHogProviderProps = {
-  children: React.ReactNode;
-};
-export function CSPostHogProvider({ children }: CSPostHogProviderProps) {
+export function CSPostHogProvider({ children }: { children: React.ReactNode }) {
   return <PostHogProvider client={posthog}>{children}</PostHogProvider>;
 }

@@ -26,6 +26,6 @@
     "@do-it-plz/client": "workspace:*"
   },
   "peerDependencies": {
-    "next": "^13.4.x || ^14.0.x"
+    "next": "^13.4.x || ^14.0.x || ^15.0.x"
   }
 }
