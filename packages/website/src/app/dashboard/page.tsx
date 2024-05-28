@@ -1,4 +1,5 @@
-import { OrganizationSwitcher, UserButton, auth } from "@clerk/nextjs";
+import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
 export default function Page() {
   const { orgId, userId } = auth();
