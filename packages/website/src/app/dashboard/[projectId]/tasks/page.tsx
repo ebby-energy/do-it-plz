@@ -1,3 +1,3 @@
 export default function TaskPage() {
-  return <p>Hi, from tasks</p>;
+  return <p>Hello, we will have more here soon!</p>;
 }
