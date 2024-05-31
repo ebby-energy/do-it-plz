@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 const getOrganization = db.query.organizations
   .findMany({
     columns: {
+      id: true,
       name: true,
       publicId: true,
       createdAt: true,
@@ -25,9 +26,9 @@ const Component = ({ publicId, name }: ComponentProps) => {
       <p>Project: {name}</p>
       <Link
         className="text-foreground font-medium hover:underline"
-        href={`/dashboard/${publicId}`}
+        href={`/dashboard/${publicId}/settings`}
       >
-        Go to Project Dashboard
+        Go to Settings
       </Link>
     </>
   );
