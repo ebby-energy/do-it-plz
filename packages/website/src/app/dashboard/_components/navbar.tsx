@@ -65,22 +65,11 @@ export const Navbar = () => {
             </>
           )}
         </div>
-        <div className="flex h-12 flex-row items-center justify-center gap-x-8">
-          <OrganizationSwitcher
-            afterSelectOrganizationUrl={({ id }) => `/dashboard/switcher/${id}`}
-            afterSelectPersonalUrl={({ id }) => `/dashboard/switcher/${id}`}
-          />
-          <UserButton />
-        </div>
       </nav>
-      <div className="flex w-full flex-row items-center justify-between">
+      <div className="flex w-full flex-row items-center justify-between md:hidden">
         <Sheet>
           <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="shrink-0 md:hidden"
-            >
+            <Button variant="outline" size="icon" className="shrink-0">
               <Menu className="h-5 w-5" />
               <span className="sr-only">Toggle navigation menu</span>
             </Button>
@@ -132,13 +121,13 @@ export const Navbar = () => {
             </nav>
           </SheetContent>
         </Sheet>
-        <div className="flex">
-          <OrganizationSwitcher
-            afterSelectOrganizationUrl={({ id }) => `/dashboard/switcher/${id}`}
-            afterSelectPersonalUrl={({ id }) => `/dashboard/switcher/${id}`}
-          />
-          <UserButton />
-        </div>
+      </div>
+      <div className="flex h-12 flex-row items-center justify-center md:gap-x-4">
+        <OrganizationSwitcher
+          afterSelectOrganizationUrl={({ id }) => `/dashboard/switcher/${id}`}
+          afterSelectPersonalUrl={({ id }) => `/dashboard/switcher/${id}`}
+        />
+        <UserButton />
       </div>
     </header>
   );
