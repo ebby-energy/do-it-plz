@@ -27,7 +27,7 @@
     "lucide-react": "^0.379.0",
     "next": "^15.0.0-rc.0",
     "next-axiom": "^1.1.1",
-    "next-themes": "^0.2.1",
+    "next-themes": "^0.3.0",
     "postcss": "8.4.33",
     "posthog-js": "^1.108.4",
     "react": "^19.0.0-rc-6f23540c7d-20240528",
