@@ -15,12 +15,16 @@ export const events = sqliteTable("events", {
     .primaryKey()
     .$defaultFn(() => createId()),
   name: text("name").notNull(),
-  taskNames: text("task_names", { mode: "json" }),
+  taskNames: text("task_names", { mode: "json" }).$type<Array<string>>(),
   projectId: text("project_id").notNull(),
   origin: text("origin"),
   payload: blob("payload", { mode: "buffer" }).notNull(),
   iv: blob("iv", { mode: "buffer" }).notNull(),
-  metadata: text("metadata", { mode: "json" }),
+  metadata: text("metadata", { mode: "json" }).$type<{
+    clientId: string;
+    clientName: string;
+    clientVersion: string;
+  }>(),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
