@@ -2,10 +2,11 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import type { Metadata } from "next";
 import { AxiomWebVitals } from "next-axiom";
+import { ThemeProvider } from "next-themes";
 import { Atkinson_Hyperlegible } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
-import { CSPostHogProvider, PostHogPageview, ThemeProvider } from "./providers";
+import { CSPostHogProvider, PostHogPageview } from "./providers";
 
 export const runtime = "edge";
 
