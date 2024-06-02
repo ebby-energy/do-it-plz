@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createProjectDB } from "@/db/project";
 import { decrypt } from "@/utils/crypto";
+import { formatDistanceToNow } from "date-fns";
 import { KeyRound } from "lucide-react";
 import { notFound } from "next/navigation";
 
@@ -49,7 +50,7 @@ export default async function EventViewPage({
           <div className="space-y-1">
             <p className="text-sm font-medium leading-none">Created</p>
             <p className="text-muted-foreground text-md">
-              {new Date(event.createdAt).toISOString()}
+              {`${new Date(event.createdAt).toISOString()} (${formatDistanceToNow(event.createdAt, { addSuffix: true })})`}
             </p>
           </div>
           <div className="space-y-1">
