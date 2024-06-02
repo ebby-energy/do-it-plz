@@ -1,8 +1,11 @@
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { db } from "@/db/parent";
 import { decrypt } from "@/utils/crypto";
 import { notFound } from "next/navigation";
-// import { Clipboard } from "lucide-react";
+import { ClipboardCopy } from "./_components/clipboard-copy";
+import { SecretToken } from "./_components/secret-token";
 
 type Props = { params: { projectId: string } };
 export default async function Settings({ params: { projectId } }: Props) {
@@ -43,20 +46,42 @@ export default async function Settings({ params: { projectId } }: Props) {
         <CardHeader>
           <CardTitle>Environment Variables</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-1">
-            <p className="text-sm font-medium leading-none">Public ID</p>
-            <div className="text-muted-foreground text-md flex flex-row space-x-4">
-              <p>{org.publicId}</p>
-              {/* <Clipboard /> */}
+        <CardContent className="space-y-8">
+          <div className="space-y-4">
+            <p className="text-sm font-medium leading-none">
+              Copy all variables for .env files
+            </p>
+            <div className="text-muted-foreground text-md flex flex-row flex-wrap items-center">
+              <ClipboardCopy
+                text={`\n# do-it-plz\nDIP_CLIENT_ID=${org.publicId}\nDIP_TOKEN=${token}\n`}
+                successMessage="Copied all environment variables to clipboard"
+              />
             </div>
           </div>
-          <div className="space-y-1">
-            <p className="text-sm font-medium leading-none">Token (secret)</p>
-            <div className="text-muted-foreground text-md flex flex-row space-x-4">
-              {token}
-              {/* <p>Project token: 🙈🙈🙈🙈🙈🙈🙈</p> */}
-              {/* <Clipboard /> */}
+          <Separator />
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <p className="text-sm font-medium leading-none">DIP_CLIENT_ID</p>
+              <div className="text-muted-foreground text-md flex flex-row flex-wrap items-center justify-between gap-y-2">
+                <p>{org.publicId}</p>
+                <ClipboardCopy
+                  text={org.publicId}
+                  successMessage="Copied client ID to clipboard"
+                />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <div className="flex flex-row items-center justify-start gap-4">
+                <p className="text-sm font-medium leading-none">DIP_TOKEN</p>
+                <Badge variant="outline">secret</Badge>
+              </div>
+              <div className="text-muted-foreground text-md flex flex-row flex-wrap items-center justify-between gap-y-2 md:flex-nowrap">
+                <SecretToken text={token} />
+                <ClipboardCopy
+                  text={token}
+                  successMessage="Copied token to clipboard"
+                />
+              </div>
             </div>
           </div>
         </CardContent>
