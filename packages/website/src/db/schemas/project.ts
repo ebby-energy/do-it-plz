@@ -20,8 +20,8 @@ export const events = sqliteTable("events", {
   origin: text("origin"),
   payload: blob("payload", { mode: "buffer" }).notNull(),
   iv: blob("iv", { mode: "buffer" }).notNull(),
+  valid: integer("valid", { mode: "boolean" }).notNull().default(true),
   metadata: text("metadata", { mode: "json" }).$type<{
-    clientId: string;
     clientName: string;
     clientVersion: string;
   }>(),
