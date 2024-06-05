@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { ClipboardCopy } from "./clipboard-copy";
 
 type Props = {
   text: string;
@@ -9,7 +10,7 @@ type Props = {
 export const SecretToken = ({ text }: Props) => {
   const [visible, setVisible] = useState(false);
   return (
-    <div className="flex w-full flex-row justify-between pr-4">
+    <div className="flex w-full flex-col justify-between">
       {visible ? (
         <span>{text}</span>
       ) : (
@@ -20,14 +21,17 @@ export const SecretToken = ({ text }: Props) => {
         </div>
       )}
       <span className="sr-only">Hidden token</span>
-      <Button
-        size="sm"
-        variant="ghost"
-        className="ml-2 font-mono text-xs"
-        onClick={() => setVisible(!visible)}
-      >
-        {visible ? "hide" : "show"}
-      </Button>
+      <div className="flex flex-row items-center justify-between">
+        <Button
+          size="sm"
+          variant="ghost"
+          className="ml-2 font-mono text-xs"
+          onClick={() => setVisible(!visible)}
+        >
+          {visible ? "hide" : "show"}
+        </Button>
+        <ClipboardCopy text={text} successMessage="Copied token to clipboard" />
+      </div>
     </div>
   );
 };

@@ -4,12 +4,24 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { db as parentDB } from "@/db/parent";
 import { createProjectDB } from "@/db/project";
+import { auth } from "@clerk/nextjs/server";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 type Props = { params: { projectId: string } };
 export default async function EventPage({ params: { projectId } }: Props) {
+  const { orgId } = auth();
+  const org = await parentDB.query.organizations.findFirst({
+    columns: {
+      id: true,
+    },
+    where: (org, { eq }) => eq(org.publicId, projectId),
+  });
+  if (!org) notFound();
+  if (org.id !== orgId) notFound();
   const projectDB = createProjectDB({ projectId });
   const events = await projectDB.query.events.findMany({
     where: (e, { eq }) => eq(e.projectId, projectId),
