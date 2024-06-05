@@ -1,9 +1,11 @@
 import type { StackItem } from "./client";
 
 type DoItPlzMetadata = {
-  clientId: string;
+  projectId: string;
+  token: string;
   clientName: string;
   clientVersion: string;
+  origin: string;
 };
 
 type SendEventInput = {
@@ -21,9 +23,11 @@ export const sendEvent = async ({ url, event, metadata }: SendEventInput) => {
     body: JSON.stringify(event),
     headers: {
       "Content-Type": "application/json",
-      "X-DIP-CLIENT-ID": metadata.clientId,
+      "X-DIP-PROJECT-ID": metadata.projectId,
+      "X-DIP-TOKEN": metadata.token,
       "X-DIP-CLIENT-NAME": metadata.clientName,
       "X-DIP-CLIENT-VERSION": metadata.clientVersion,
+      "X-DIP-ORIGIN": metadata.origin,
     },
   });
 };
@@ -39,9 +43,11 @@ export const sendPlz = async ({ url, stack, metadata }: SendPlzInput) => {
     body: JSON.stringify(stack),
     headers: {
       "Content-Type": "application/json",
-      "X-DIP-CLIENT-ID": metadata.clientId,
+      "X-DIP-PROJECT-ID": metadata.projectId,
+      "X-DIP-TOKEN": metadata.token,
       "X-DIP-CLIENT-NAME": metadata.clientName,
       "X-DIP-CLIENT-VERSION": metadata.clientVersion,
+      "X-DIP-ORIGIN": metadata.origin,
     },
   });
 };
@@ -61,9 +67,11 @@ export const sendTask = async ({ url, task, metadata }: SendTaskInput) => {
     body: JSON.stringify(task),
     headers: {
       "Content-Type": "application/json",
-      "X-DIP-CLIENT-ID": metadata.clientId,
+      "X-DIP-PROJECT-ID": metadata.projectId,
+      "X-DIP-TOKEN": metadata.token,
       "X-DIP-CLIENT-NAME": metadata.clientName,
       "X-DIP-CLIENT-VERSION": metadata.clientVersion,
+      "X-DIP-ORIGIN": metadata.origin,
     },
   });
 };

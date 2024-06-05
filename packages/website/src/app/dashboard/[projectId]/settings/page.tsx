@@ -56,7 +56,7 @@ export default async function Settings({ params: { projectId } }: Props) {
             </p>
             <div className="text-muted-foreground text-md flex flex-row flex-wrap items-center">
               <ClipboardCopy
-                text={`\n# do-it-plz\nDIP_CLIENT_ID=${org.publicId}\nDIP_TOKEN=${token}\n`}
+                text={`\n# do-it-plz\nDIP_PROJECT_ID=${org.publicId}\nDIP_TOKEN=${token}\n`}
                 successMessage="Copied all environment variables to clipboard"
               />
             </div>
@@ -64,12 +64,12 @@ export default async function Settings({ params: { projectId } }: Props) {
           <Separator />
           <div className="space-y-4">
             <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">DIP_CLIENT_ID</p>
+              <p className="text-sm font-medium leading-none">DIP_PROJECT_ID</p>
               <div className="text-muted-foreground text-md flex flex-row flex-wrap items-center justify-between gap-y-2">
                 <p>{org.publicId}</p>
                 <ClipboardCopy
                   text={org.publicId}
-                  successMessage="Copied client ID to clipboard"
+                  successMessage="Copied project ID to clipboard"
                 />
               </div>
             </div>

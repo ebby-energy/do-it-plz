@@ -21,7 +21,9 @@ const urls = {
 };
 
 const metadata = {
-  clientId: "test",
+  projectId: "test",
+  token: "test",
+  origin: "https://do-it-plz.com",
   clientName: pkg.name,
   clientVersion: pkg.version,
 };
@@ -73,7 +75,11 @@ const dip = initDoItPlz({
     "test-retry": {},
     "test-error": {},
   },
-  options: { clientId: "test" },
+  options: {
+    projectId: "test",
+    token: "test",
+    origin: "https://do-it-plz.com",
+  },
 });
 dip.register({
   incrementCount: dip.on({ event: "added-number" }).doIt(async ({ plz }) => {

@@ -11,18 +11,28 @@ type Client = DoItPlzClient<any>;
 
 type InitDoItPlz<TEvents> = {
   events: TEvents;
-  options?: { clientId?: string };
+  options?: { projectId?: string; token?: string; origin: string };
 };
 export const initDoItPlz = <TEvents extends Events>({
   events,
   options,
 }: InitDoItPlz<TEvents>) => {
-  const clientId = options?.clientId ?? process.env.DO_IT_PLZ_CLIENT_ID;
-  if (!clientId) {
-    throw new Error("DO_IT_PLZ_CLIENT_ID is not set");
+  const projectId = options?.projectId ?? process.env.DIP_PROJECT_ID;
+  if (!projectId) {
+    throw new Error("DIP_PROJECT_ID is not set");
+  }
+  const token = options?.token ?? process.env.DIP_TOKEN;
+  if (!token) {
+    throw new Error("DIP_TOKEN is not set");
+  }
+  const origin = options?.origin;
+  if (!origin) {
+    throw new Error("Origin is required");
   }
   const clientOptions = {
-    clientId,
+    projectId,
+    token,
+    origin,
     clientName: packageName(),
     clientVersion: packageVersion(),
   } satisfies Options;

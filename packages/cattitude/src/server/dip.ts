@@ -11,7 +11,11 @@ const dip = initDoItPlz({
     "request cat fact": {},
     "new cat fact": { payload: catFactSchema },
   },
-  options: { clientId: "cattitude" },
+  options: {
+    projectId: "cattitude",
+    token: "test",
+    origin: "http://localhost:3000",
+  },
 });
 
 dip.register({
