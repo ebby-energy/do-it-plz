@@ -1,7 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { db as parentDB } from "@/db/parent";
 import { createProjectDB } from "@/db/project";
 import { decrypt } from "@/utils/crypto";
+import { auth } from "@clerk/nextjs/server";
 import { formatDistanceToNow } from "date-fns";
 import { KeyRound } from "lucide-react";
 import { notFound } from "next/navigation";
@@ -10,6 +12,17 @@ type Props = { params: { projectId: string; eventId: string } };
 export default async function EventViewPage({
   params: { projectId, eventId },
 }: Props) {
+  const { orgId } = auth();
+  const org = await parentDB.query.organizations.findFirst({
+    columns: {
+      id: true,
+      token: true,
+      iv: true,
+    },
+    where: (org, { eq }) => eq(org.publicId, projectId),
+  });
+  if (!org) notFound();
+  if (org.id !== orgId) notFound();
   const db = createProjectDB({ projectId });
   const event = await db.query.events.findFirst({
     columns: {
@@ -26,11 +39,8 @@ export default async function EventViewPage({
       and(eq(event.id, eventId), eq(event.projectId, projectId)),
   });
   if (!event) notFound();
-  const payload = await decrypt(
-    event.payload,
-    process.env.SECRET_KEY!,
-    event.iv,
-  );
+  const token = await decrypt(org.token, process.env.SECRET_KEY!, org.iv);
+  const payload = await decrypt(event.payload, token, event.iv);
   const parsedPayload = JSON.parse(payload);
   const client = event.metadata
     ? `${event.metadata.clientName}@${event.metadata.clientVersion}`
