@@ -24,6 +24,11 @@ export default async function EventPage({ params: { projectId } }: Props) {
   if (org.id !== orgId) notFound();
   const projectDB = createProjectDB({ projectId });
   const events = await projectDB.query.events.findMany({
+    columns: {
+      id: true,
+      name: true,
+      createdAt: true,
+    },
     where: (e, { eq }) => eq(e.projectId, projectId),
   });
   return (
