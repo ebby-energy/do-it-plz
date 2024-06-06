@@ -5,8 +5,26 @@ import { createProjectDB } from "@/db/project";
 import { decrypt } from "@/utils/crypto";
 import { auth } from "@clerk/nextjs/server";
 import { formatDistanceToNow } from "date-fns";
-import { KeyRound } from "lucide-react";
+import { Check, KeyRound, X } from "lucide-react";
 import { notFound } from "next/navigation";
+
+const ValidityBadge = ({ valid }: { valid: boolean }) => {
+  if (!valid) {
+    return (
+      <Badge variant="outline" className="text-green-400">
+        <Check className="mr-2 h-3 w-3" />
+        <p>Valid payload</p>
+      </Badge>
+    );
+  } else {
+    return (
+      <Badge variant="outline" className="text-red-400">
+        <X className="mr-2 h-3 w-3" />
+        <p>Invalid payload</p>
+      </Badge>
+    );
+  }
+};
 
 type Props = { params: { projectId: string; eventId: string } };
 export default async function EventViewPage({
@@ -33,6 +51,7 @@ export default async function EventViewPage({
       createdAt: true,
       iv: true,
       payload: true,
+      valid: true,
       metadata: true,
     },
     where: (event, { and, eq }) =>
@@ -74,6 +93,7 @@ export default async function EventViewPage({
             <pre className="text-muted-foreground whitespace-pre-wrap font-mono text-sm">
               {JSON.stringify(parsedPayload, null, 2)}
             </pre>
+            <ValidityBadge valid={event.valid} />
           </div>
           <div className="space-y-1">
             <p className="text-sm font-medium leading-none">Tasks</p>
