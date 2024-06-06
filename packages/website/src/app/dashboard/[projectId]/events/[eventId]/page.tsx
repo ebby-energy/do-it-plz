@@ -9,7 +9,7 @@ import { Check, KeyRound, X } from "lucide-react";
 import { notFound } from "next/navigation";
 
 const ValidityBadge = ({ valid }: { valid: boolean }) => {
-  if (!valid) {
+  if (valid) {
     return (
       <Badge variant="outline" className="text-green-400">
         <Check className="mr-2 h-3 w-3" />
