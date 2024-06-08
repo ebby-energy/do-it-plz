@@ -1,11 +1,15 @@
 import { db as parentDB } from "@/db/parent";
 import { createProjectDB } from "@/db/project";
-import { events } from "@/db/schemas/project";
+import { events, tasks } from "@/db/schemas/project";
 import { decrypt } from "@/utils/crypto";
 import { withAxiom, type AxiomRequest } from "next-axiom";
 import z from "zod";
 
 export const runtime = "edge";
+
+function isTuple<T>(array: T[]): array is [T, ...T[]] {
+  return array.length > 0;
+}
 
 const schema = z.object({
   body: z.object({
@@ -70,16 +74,35 @@ export const POST = withAxiom(async (req: AxiomRequest) => {
   try {
     const projectDB = createProjectDB({ projectId: org.publicId });
 
-    await projectDB.insert(events).values({
-      name,
-      taskNames,
-      projectId,
-      origin,
-      payload: Buffer.from(payload),
-      iv: Buffer.from(iv),
-      valid,
-      metadata: { clientName, clientVersion },
-    });
+    const [{ id: eventId }] = await projectDB
+      .insert(events)
+      .values({
+        name,
+        taskNames,
+        projectId,
+        origin,
+        payload: Buffer.from(payload),
+        iv: Buffer.from(iv),
+        valid,
+        metadata: { clientName, clientVersion },
+      })
+      .returning({ id: events.id });
+
+    if (taskNames) {
+      const batch = taskNames.map((name) =>
+        projectDB.insert(tasks).values({
+          name,
+          eventId,
+          projectId,
+          origin,
+          status: "unactioned",
+          complete: false,
+        }),
+      );
+      if (isTuple(batch)) {
+        await projectDB.batch(batch);
+      }
+    }
     log.info("Event inserted successfully");
     return Response.json({ success: true });
   } catch (error) {
