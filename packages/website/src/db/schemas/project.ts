@@ -13,7 +13,7 @@ const statuses = [
 export const events = sqliteTable("events", {
   id: text("id")
     .primaryKey()
-    .$defaultFn(() => createId()),
+    .$defaultFn(() => `event_${createId()}`),
   name: text("name").notNull(),
   taskNames: text("task_names", { mode: "json" }).$type<Array<string>>(),
   projectId: text("project_id").notNull(),
@@ -33,7 +33,7 @@ export const events = sqliteTable("events", {
 export const tasks = sqliteTable("tasks", {
   id: text("id")
     .primaryKey()
-    .$defaultFn(() => createId()),
+    .$defaultFn(() => `task_${createId()}`),
   name: text("name").notNull(),
   eventId: text("event_id")
     .references(() => events.id)
@@ -51,7 +51,7 @@ export const tasks = sqliteTable("tasks", {
 export const subtasks = sqliteTable("subtasks", {
   id: text("id")
     .primaryKey()
-    .$defaultFn(() => createId()),
+    .$defaultFn(() => `subtask_${createId()}`),
   name: text("name").notNull(),
   taskId: text("task_id")
     .references(() => tasks.id)

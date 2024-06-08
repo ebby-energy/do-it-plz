@@ -14,7 +14,7 @@ export const organizations = sqliteTable(
     id: text("id").primaryKey(),
     publicId: text("public_id")
       .notNull()
-      .$defaultFn(() => createId()),
+      .$defaultFn(() => `proj_${createId()}`),
     name: text("name").notNull(),
     token: blob("token", { mode: "buffer" }).notNull(),
     iv: blob("iv", { mode: "buffer" }).notNull(),
