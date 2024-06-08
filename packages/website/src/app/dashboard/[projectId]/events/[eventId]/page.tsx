@@ -8,6 +8,15 @@ import { formatDistanceToNow } from "date-fns";
 import { Check, KeyRound, X } from "lucide-react";
 import { notFound } from "next/navigation";
 
+const formatPayload = (payload: string) => {
+  try {
+    const parsed = JSON.parse(payload);
+    return JSON.stringify(parsed, null, 2);
+  } catch {
+    return payload;
+  }
+};
+
 const ValidityBadge = ({ valid }: { valid: boolean }) => {
   if (valid) {
     return (
@@ -60,7 +69,7 @@ export default async function EventViewPage({
   if (!event) notFound();
   const token = await decrypt(org.token, process.env.SECRET_KEY!, org.iv);
   const payload = await decrypt(event.payload, token, event.iv);
-  const parsedPayload = JSON.parse(payload);
+  const formattedPayload = formatPayload(payload);
   const client = event.metadata
     ? `${event.metadata.clientName}@${event.metadata.clientVersion}`
     : "Unknown client";
@@ -91,7 +100,7 @@ export default async function EventViewPage({
               </Badge>
             </div>
             <pre className="text-muted-foreground whitespace-pre-wrap font-mono text-sm">
-              {JSON.stringify(parsedPayload, null, 2)}
+              {formattedPayload}
             </pre>
             <ValidityBadge valid={event.valid} />
           </div>
