@@ -30,6 +30,7 @@ export default async function EventPage({ params: { projectId } }: Props) {
       createdAt: true,
     },
     where: (e, { eq }) => eq(e.projectId, projectId),
+    orderBy: (e, { desc }) => desc(e.createdAt),
   });
   return (
     <div className="flex w-full flex-1 flex-col items-center justify-start gap-y-12">
