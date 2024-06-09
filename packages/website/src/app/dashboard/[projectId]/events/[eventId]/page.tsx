@@ -2,11 +2,14 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { db as parentDB } from "@/db/parent";
 import { createProjectDB } from "@/db/project";
+import type { Task } from "@/db/schemas/project";
 import { decrypt } from "@/utils/crypto";
 import { auth } from "@clerk/nextjs/server";
 import { formatDistanceToNow } from "date-fns";
 import { Check, KeyRound, X } from "lucide-react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { StatusBadge } from "../../tasks/_components/status-badge";
 
 const formatPayload = (payload: string) => {
   try {
@@ -35,6 +38,29 @@ const ValidityBadge = ({ valid }: { valid: boolean }) => {
   }
 };
 
+type TaskCardListProps = {
+  tasks: Array<Pick<Task, "id" | "name" | "status">> | undefined;
+  projectId: string;
+};
+const TaskCardList = ({ tasks, projectId }: TaskCardListProps) => {
+  if (!tasks?.length)
+    return <p className="text-muted-foreground text-md">N/A</p>;
+  return tasks.map((task) => (
+    <Link
+      key={task.id}
+      href={`/dashboard/${projectId}/tasks/${task.id}`}
+      className="w-full"
+    >
+      <Card className="mt-2 flex flex-col transition-all hover:scale-[1.02]">
+        <CardContent className="flex flex-row items-center justify-between p-4">
+          <p className="font-mono text-sm">&apos;{task.name}&apos;</p>
+          <StatusBadge status={task.status} />
+        </CardContent>
+      </Card>
+    </Link>
+  ));
+};
+
 type Props = { params: { projectId: string; eventId: string } };
 export default async function EventViewPage({
   params: { projectId, eventId },
@@ -52,6 +78,15 @@ export default async function EventViewPage({
   if (org.id !== orgId) notFound();
   const db = createProjectDB({ projectId });
   const event = await db.query.events.findFirst({
+    with: {
+      tasks: {
+        columns: {
+          id: true,
+          name: true,
+          status: true,
+        },
+      },
+    },
     columns: {
       id: true,
       name: true,
@@ -106,9 +141,7 @@ export default async function EventViewPage({
           </div>
           <div className="space-y-1">
             <p className="text-sm font-medium leading-none">Tasks</p>
-            <p className="text-muted-foreground text-md">
-              {event.taskNames?.join(", ") ?? "N/A"}
-            </p>
+            <TaskCardList tasks={event.tasks} projectId={projectId} />
           </div>
         </CardContent>
       </Card>
