@@ -1,5 +1,5 @@
 import { createId } from "@paralleldrive/cuid2";
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { blob, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 const statuses = [
@@ -30,6 +30,10 @@ export const events = sqliteTable("events", {
     .default(sql`(unixepoch())`),
 });
 
+export const eventsRelations = relations(events, ({ many }) => ({
+  tasks: many(tasks),
+}));
+
 export const tasks = sqliteTable("tasks", {
   id: text("id")
     .primaryKey()
@@ -46,6 +50,15 @@ export const tasks = sqliteTable("tasks", {
     .notNull()
     .default(sql`(unixepoch())`),
 });
+
+export const tasksRelations = relations(tasks, ({ one }) => ({
+  event: one(events, {
+    fields: [tasks.eventId],
+    references: [events.id],
+  }),
+}));
+
+export type Task = typeof tasks.$inferSelect;
 
 /** aka "plz"s */
 export const subtasks = sqliteTable("subtasks", {
